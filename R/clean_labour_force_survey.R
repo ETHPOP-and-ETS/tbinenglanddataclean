@@ -3,6 +3,10 @@
 #' @description This functions automatically detects Labour Force Survey data in the specified
 #' directory and reads it into R. It then extracts the age, sex, UK birth status, and country.
 #' From this it creates a tidy dataset. The data can be downloaded [here](https://discover.ukdataservice.ac.uk/catalogue/?sn=5461).
+#' 
+#' cry01: country of birth
+#' pwtXX: sample weights
+#' 
 #' @inheritParams clean_demographics_uk
 #' @param years A numeric vector specifying which years of data to clean
 #' @param years_var A named list of character strings. Each character string should contain the variables
@@ -18,23 +22,23 @@
 #'
 clean_labour_force_survey <- function(data_path = "~/data/tb_data/LFS",
                                       years = 2000:2016,
-                                      years_var = list( '2000' = c('age', 'sex', 'cry', 'govtof', 'pwt07'),
-                                                        '2001' = c('age', 'sex', 'cry01', 'country', 'pwt07'),
-                                                        '2002' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2003' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2004' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2005' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2006' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2007' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2008' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2009' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2010' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2011' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                        '2012' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT14'),
-                                                        '2013' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
-                                                        '2014' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
-                                                        '2015' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
-                                                        '2016' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16')),
+                                      years_var = list('2000' = c('age', 'sex', 'cry', 'govtof', 'pwt07'),
+                                                       '2001' = c('age', 'sex', 'cry01', 'country', 'phhwt07'), #, 'pwt07'),
+                                                       '2002' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2003' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2004' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2005' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2006' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2007' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2008' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2009' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2010' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2011' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                                       '2012' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT14'),
+                                                       '2013' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
+                                                       '2014' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
+                                                       '2015' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
+                                                       '2016' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16')),
                                       rtn = TRUE,
                                       save = TRUE,
                                       save_name = "formatted_LFS_2000_2016",
