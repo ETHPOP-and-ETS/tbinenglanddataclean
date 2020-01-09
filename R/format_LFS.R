@@ -1,4 +1,14 @@
-#
+
+#' format_LFS
+#'
+#' @param x 
+#' @param year 
+#' @param year_var 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 format_LFS <- function(x, year, year_var){
   
   x <- x %>%
@@ -18,6 +28,7 @@ format_LFS <- function(x, year, year_var){
                               ifelse(govtof %in% c(11), 'Wales', ifelse(govtof %in% c(12), 'Scotland',
                                                                         ifelse(govtof %in% c(13), 'Wales', NA))))) %>%
       select(-govtof) -> x
+    
     ## country of birth (UK/not UK)
     x %>%
       mutate(CoB = ifelse(cry %in% c(-8,-9), NA,
@@ -72,8 +83,7 @@ format_LFS <- function(x, year, year_var){
     
     ## standardise weight
     x %>%
-      # rename(Weight = pwt07) -> x
-      rename(Weight = phhwt07) -> x
+      rename(Weight = pwt07) -> x
     
   }else if (year %in% 2002:2011) {
     ## clean age with R style missing
@@ -88,6 +98,7 @@ format_LFS <- function(x, year, year_var){
                                      ifelse(COUNTRY %in% c(2), 'Wales',
                                             ifelse(COUNTRY %in% c(3,4), 'Scotland', 'Northern Ireland'))))) %>%
       select(-COUNTRY) -> x
+    
     ## Split due to  errors in variable encoding between 2002 and 2007
     if (year %in% c(2002:206)) {
       ## country of birth (UK/not UK)

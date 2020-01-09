@@ -7,7 +7,7 @@
 #' - Setting factor variable baslines
 #' - Munge new variables
 #' @param data_path A character string containing the file pathway for the 2016 ETS data.
-#' @param return Logical, defaults to \code{TRUE}. Specifies whether to return cleanded data.
+#' @param rtn Logical, defaults to \code{TRUE}. Specifies whether to return cleanded data.
 #' @param save Logical, defaults to \code{FALSE}. Specifies whether to save data
 #' @param save_name A character string containing the name to save the tidy ETS data under.
 #' @param save_path A character string containing the file pathway to the folder into
@@ -26,7 +26,7 @@
 #' @examples
 #'
 clean_munge_ets_2016 <- function(data_path = NULL,
-                                 return = TRUE,
+                                 rtn = TRUE,
                                  save = TRUE,
                                  save_name = "clean_ets_2016",
                                  save_path = "~/data/tb_data/tbinenglanddataclean",
@@ -294,7 +294,7 @@ clean_munge_ets_2016 <- function(data_path = NULL,
     )
   }
 
-  if (return) {
+  if (trn) {
     return(df)
   }
 }

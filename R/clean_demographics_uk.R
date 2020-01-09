@@ -26,7 +26,7 @@ clean_demographics_uk <- function(data_path = "~/data/tb_data/UK_demographics",
                                   demo_2000 = NA,
                                   demo_2001_2015 = NA,
                                   countries = c("E"),
-                                  return = TRUE,
+                                  rtn = TRUE,
                                   save = TRUE,
                                   save_name = "E_demo_2000_2015",
                                   save_path = "~/data/tb_data/tbinenglanddataclean",
@@ -131,7 +131,7 @@ clean_demographics_uk <- function(data_path = "~/data/tb_data/UK_demographics",
     )
   }
   
-  if (return) {
+  if (rtn) {
     return(demo)
   }
   

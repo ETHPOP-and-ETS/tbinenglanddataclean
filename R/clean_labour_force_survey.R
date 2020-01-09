@@ -20,32 +20,36 @@
 #' @import ggplot2
 #' @examples
 #'
-clean_labour_force_survey <- function(data_path = "~/data/tb_data/LFS",
+clean_labour_force_survey <- function(data_path = "D:/data/LFS/stata",
                                       years = 2000:2016,
-                                      years_var = list('2000' = c('age', 'sex', 'cry', 'govtof', 'pwt07'),
-                                                       '2001' = c('age', 'sex', 'cry01', 'country', 'phhwt07'), #, 'pwt07'),
-                                                       '2002' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2003' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2004' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2005' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2006' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2007' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2008' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2009' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2010' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2011' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                                       '2012' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT14'),
-                                                       '2013' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
-                                                       '2014' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
-                                                       '2015' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
-                                                       '2016' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16')),
+                                      years_var = list(
+                                        '2000' = c('age', 'sex', 'cry',   'govtof',  'pwt07'),
+                                        '2001' = c('age', 'sex', 'cry01', 'country', 'pwt07'),
+                                        '2002' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2003' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2004' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2005' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2006' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2007' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2008' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2009' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2010' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2011' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
+                                        '2012' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT14'),
+                                        '2013' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
+                                        '2014' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
+                                        '2015' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
+                                        '2016' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16')),
                                       rtn = TRUE,
                                       save = TRUE,
                                       save_name = "formatted_LFS_2000_2016",
-                                      save_path = "~/data/tb_data/tbinenglanddataclean",
+                                      save_path = "",
                                       save_format = "rds",
                                       verbose = TRUE,
                                       theme_set = theme_minimal) {
+  
+  # subset list of column names to match years
+  years_var <- years_var[as.character(years)]
   
   # Read in LFS data --------------------------------------------------------
   ## data notes
@@ -55,9 +59,11 @@ clean_labour_force_survey <- function(data_path = "~/data/tb_data/LFS",
   
   ## ignore data
   LFS_folders <- LFS_folders[grep('rds', LFS_folders, invert = TRUE)]
+  ## ignore zip files
+  LFS_folders <- LFS_folders[grep('zip', LFS_folders, invert = TRUE)]
   
-  ## For each data folder in the directory
-  LFS_data <-
+  ## find all data folders paths
+  LFS_paths <-
     lapply(LFS_folders,
            function(x){
              
@@ -73,29 +79,60 @@ clean_labour_force_survey <- function(data_path = "~/data/tb_data/LFS",
              ## find data folder dir
              data_sub_path <- file.path(folder_dir, data_folder)
              
-             ## contents of data folder
+             # some folders have extra level stata|stata11
+             all_files <- list.files(data_sub_path, full.names = TRUE)
+             nodir_files <- all_files[!file.info(all_files)$isdir]
+             if (length(nodir_files) == 0) {
+               data_sub_path <- all_files
+             }
+             
+             ## contents of data folder .dta file
              stata_folder <- list.files(path = data_sub_path)
              
              ## dat path
              full_path <- file.path(data_sub_path, stata_folder)
              
+             return(full_path)
+           })
+  
+  # subset data folders
+  lfc_ajxx <- paste(paste0("aj", substr(years, 3, 4)), collapse = "|")
+  files_keep <- map_lgl(LFS_paths, function(x) grepl(lfc_ajxx, x))
+  
+  # get years corresponding to data folders
+  # may not be in order
+  # have to do it this way because names of folders change over time
+  data_folder_years <- 
+    map_chr(stringr::str_split(LFS_paths, "aj"),                # April-June
+            .f = function(x) substr(x[2], start = 0, stop = 2)) # last 2 digits of year
+  
+  # prepend for full year
+  data_folder_years <- paste0("20", data_folder_years)
+  data_folder_years <- data_folder_years[files_keep]
+  
+  # read-in data
+  LFS_data <-
+    lapply(LFS_paths[files_keep],
+           function(x){
              if (verbose) {
-               message("Data loaded from: ", full_path)
+               message("Data loaded from: ", x)
              }
-             ## read in the data
-             df <- read_stata(file = full_path, encoding = "latin1")
+
+             df <- haven::read_stata(file = x, encoding = "latin1")
              
              return(df)
            })
   
   ## name data list
-  names(LFS_data) <- LFS_folders
+  names(LFS_data) <- data_folder_years
+  LFS_data <- LFS_data[sort(names(LFS_data))]
+  
   
   # Extract key variables and combine ---------------------------------------
   
   form_LFS_data <-
     pmap(list(LFS_data, years, years_var),
-         format_LFS()) %>%
+         .f = format_LFS) %>%
     bind_rows() %>%
     mutate(Country = factor(Country),
            CoB = factor(CoB),
@@ -104,7 +141,8 @@ clean_labour_force_survey <- function(data_path = "~/data/tb_data/LFS",
     mutate(Age = factor(Age, levels = c(as.character(0:89), '90+')))
   
   
-  if (verbose) {
+  # if (verbose) {
+  if (FALSE) {
     
     plot_LFS(form_LFS_data)
   }
@@ -115,7 +153,7 @@ clean_labour_force_survey <- function(data_path = "~/data/tb_data/LFS",
               name = save_name,
               path = save_path,
               format = save_format,
-              message = "Cleaded LFS data has been saved to: ",
+              message = "Cleaned LFS data has been saved to: ",
               verbose = verbose
     )
   }

@@ -1,4 +1,13 @@
-#
+
+#' plot_LFS
+#'
+#' @param form_LFS_data 
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' 
 plot_LFS <- function(form_LFS_data) {
   
   # Simple plots of the data ------------------------------------------------
