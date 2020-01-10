@@ -17,14 +17,14 @@
 #' @importFrom dplyr mutate summarise select group_by mutate filter full_join bind_rows
 #' @examples
 #'
-combine_ons_with_lfs <- function(data_path = "~/data/tb_data/tbinenglanddataclean",
+combine_ons_with_lfs <- function(data_path = "",
                                  ons_name = "E_demo_2000_2015.rds",
                                  lfs_name = "formatted_LFS_2000_2016.rds",
                                  countries = "England",
-                                 return = TRUE,
+                                 rtn = TRUE,
                                  save = TRUE,
                                  save_name = "E_ons_lfs_2000_2016",
-                                 save_path = "~/data/tb_data/tbinenglanddataclean",
+                                 save_path = "",
                                  save_format = "rds",
                                  verbose = TRUE,
                                  theme_set = NULL) {
@@ -34,21 +34,25 @@ combine_ons_with_lfs <- function(data_path = "~/data/tb_data/tbinenglanddataclea
   }
   
   demo_path <- file.path(data_path, ons_name)
+  demo_2000_2015 <- readRDS(demo_path)
+  
   if (verbose) {
     message("Loading demographic data from: ", demo_path)
   }
-  demo_2000_2015 <- readRDS(demo_path)
   
   lfs_path <- file.path(data_path, lfs_name)
+  lfs_data <- readRDS(lfs_path)
+  
   if (verbose) {
     message("Loading labour force survey data from: ", lfs_path)
   }
-  lfs_data <- readRDS(lfs_path)
   
   
   # aggregate LFS to yearly population counts --------------------------
+  # independent of sex
+  # basically, marginalising weight over England and sex
   
-  demo_2000_2016_strat_est <- 
+  lfs_data_aggr <-
     lfs_data %>%
     filter(Country %in% countries) %>%
     group_by(Year, Age, CoB) %>%
@@ -56,23 +60,23 @@ combine_ons_with_lfs <- function(data_path = "~/data/tb_data/tbinenglanddataclea
     mutate(CoB = as.character(CoB))
   
   
-  # Format demographics for consistency -------------------------------------
+  # Format demographics harmonise with lfs ---------------------------------
+  
   demo_2000_2015 <- 
     demo_2000_2015 %>%
     mutate(CoB = 'Total') %>%
-    mutate(CoB = CoB) %>% # WHAT IS THIS FOR??
+    # mutate(CoB = CoB) %>% # WHAT IS THIS FOR??
     mutate(Year = as.numeric(as.character(Year)))
   
-  
-  # Bind data ---------------------------------------------------------------
+  # row bind
   demo_2000_2016_strat_est <-
-    demo_2000_2015 %>%
-    full_join(demo_2000_2016_strat_est,
+    full_join(demo_2000_2015, lfs_data_aggr,
               by = c('Year', 'Age', 'CoB', 'Population')) %>%
     mutate(CoB = factor(CoB, levels = c('Total', 'UK born', 'Non-UK born')))
   
   
-  # Add comparison total from LFS -------------------------------------------
+  # Include comparison total from LFS -------------------------------------------
+  
   demo_2000_2016_strat_est <-
     demo_2000_2016_strat_est %>%
     filter(!(CoB %in% 'Total')) %>%
@@ -89,7 +93,7 @@ combine_ons_with_lfs <- function(data_path = "~/data/tb_data/tbinenglanddataclea
     demo_2000_2016_strat_est %>%
     mutate(`Age group` = as.character(Age) %>%
              replace(Age %in% '90+', '90') %>%
-             as.numeric %>%
+             as.numeric() %>%
              cut(breaks = seq(0,95,5),
                  right = FALSE,
                  ordered_result = TRUE,
@@ -101,7 +105,7 @@ combine_ons_with_lfs <- function(data_path = "~/data/tb_data/tbinenglanddataclea
     mutate(`Age group (condensed)` = Age %>%
              as.character %>%
              replace(Age %in% '90+', '90') %>%
-             as.numeric %>%
+             as.numeric() %>%
              cut(breaks = c(0, 15, 65, 91),
                  right = FALSE,
                  ordered_result = TRUE,
@@ -109,7 +113,9 @@ combine_ons_with_lfs <- function(data_path = "~/data/tb_data/tbinenglanddataclea
     ungroup()
   
   
-  if (verbose) {
+  # if (verbose) {
+  if (FALSE) {
+    
     plot_combined_ONS_LFS(demo_2000_2016_strat_est)
     
     #current bug in plotly for negative values in box plots means this will not present the correct results so use static table
@@ -138,7 +144,7 @@ combine_ons_with_lfs <- function(data_path = "~/data/tb_data/tbinenglanddataclea
               verbose = verbose)
   }
   
-  if (return) {
+  if (rtn) {
     return(demo_2000_2016_strat_est)
   }
 }

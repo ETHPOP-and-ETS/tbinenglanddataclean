@@ -82,18 +82,16 @@ plot_combined_ONS_LFS <- function(demo_2000_2016_strat_est){
   p5
   
   
-  
-  
   # Look at total population over time --------------------------------------
   demo_2000_2016_strat_est %>%
-    filter(Year %% 5 == 0) %>%
+    # filter(Year %% 5 == 0) %>%
     group_by(CoB, Year) %>%
     summarise(Population = sum(Population)) %>%
     ggplot(aes(x = Year, y = Population, fill = CoB, colour = CoB)) +
     geom_point() +
     geom_line() +
     theme_set +
-    labs(caption = "Population estimates over time for both the ONS abd KFS") -> p6
+    labs(caption = "Population estimates over time for the ONS and LFS") -> p6
   
   p6
 }

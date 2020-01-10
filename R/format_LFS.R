@@ -19,26 +19,34 @@ format_LFS <- function(x, year, year_var){
   if (year == 2000) {
     
     x %>%
-      mutate(Age = replace(age, age %in% c(-8, -9), NA)) %>%
+      mutate(Age = replace(age,
+                           age %in% c(-8,-9), NA)) %>%
       select(-age) -> x
     
     ## country of residence
-    x %>%
-      mutate(Country = ifelse(govtof %in% c(1,2,3,4,5,6,7,8,9,10), 'England',
-                              ifelse(govtof %in% c(11), 'Wales', ifelse(govtof %in% c(12), 'Scotland',
-                                                                        ifelse(govtof %in% c(13), 'Wales', NA))))) %>%
-      select(-govtof) -> x
+    x <- 
+      x %>%
+      mutate(Country = 
+               case_when(
+                 govtof %in% 1:10 ~ 'England',
+                 govtof %in% 11   ~ 'Wales',
+                 govtof %in% 12   ~ 'Scotland',
+                 govtof %in% 13   ~ 'Northern Ireland',
+                 TRUE ~ NA_character_)) %>%  
+      select(-govtof)
     
     ## country of birth (UK/not UK)
     x %>%
       mutate(CoB = ifelse(cry %in% c(-8,-9), NA,
-                          ifelse(cry %in% c(1), 'UK born', 'Non-UK born'))) %>%
+                          ifelse(cry %in% c(1),
+                                 'UK born', 'Non-UK born'))) %>%
       select(-cry) -> x
     
     ## formating of sex
     x %>%
       mutate(Sex = ifelse(sex %in% c(-8,-9), NA,
-                          ifelse(sex %in% c(1), 'Male', 'Female'))) %>%
+                          ifelse(sex %in% 1,
+                                 'Male', 'Female'))) %>%
       select(-sex) -> x
     
     ## standardise weight
@@ -48,18 +56,18 @@ format_LFS <- function(x, year, year_var){
   }else if (year == 2001) {
     
     x %>%
-      mutate(Age = replace(age, age %in% c(-8, -9), NA)) %>%
+      mutate(Age = replace(age, age %in% c(-8,-9), NA)) %>%
       select(-age) -> x
     
     ## country of residence
     x %>%
       mutate(Country = 
                case_when(
-                 country %in% c(-9, -8) ~ NA_character_,
-                 country %in% c(1)   ~ 'England',
-                 country %in% c(2)   ~ 'Wales',
+                 country %in% c(-9,-8) ~ NA_character_,
+                 country %in% 1      ~ 'England',
+                 country %in% 2      ~ 'Wales',
                  country %in% c(3,4) ~ 'Scotland',
-                 country %in% c(5)   ~ 'Northern Ireland',
+                 country %in% 5      ~ 'Northern Ireland',
                  TRUE ~ NA_character_)) %>%  
       select(-country) -> x
     
@@ -88,15 +96,19 @@ format_LFS <- function(x, year, year_var){
   }else if (year %in% 2002:2011) {
     ## clean age with R style missing
     x %>%
-      mutate(Age = replace(AGE, AGE %in% c(-8, -9), NA)) %>%
+      mutate(Age = replace(AGE, AGE %in% c(-8,-9), NA)) %>%
       select(-AGE) -> x
     
     ## country of residence
     x %>%
-      mutate(Country = ifelse(COUNTRY %in% c(-9, -8), NA,
-                              ifelse(COUNTRY %in% c(1), 'England',
-                                     ifelse(COUNTRY %in% c(2), 'Wales',
-                                            ifelse(COUNTRY %in% c(3,4), 'Scotland', 'Northern Ireland'))))) %>%
+      mutate(Country = 
+               case_when(
+                 COUNTRY %in% c(-9, -8) ~ NA_character_,
+                 COUNTRY %in% c(1)   ~ 'England',
+                 COUNTRY %in% c(2)   ~ 'Wales',
+                 COUNTRY %in% c(3,4) ~ 'Scotland',
+                 COUNTRY %in% c(5)   ~ 'Northern Ireland',
+                 TRUE ~ NA_character_)) %>%  
       select(-COUNTRY) -> x
     
     ## Split due to  errors in variable encoding between 2002 and 2007
@@ -104,12 +116,14 @@ format_LFS <- function(x, year, year_var){
       ## country of birth (UK/not UK)
       x %>%
         mutate(CoB = ifelse(CRY01 %in% c(-8,-9), NA,
-                            ifelse(CRY01 %in% c(1,2,3,4,5), 'UK born', 'Non-UK born'))) %>%
+                            ifelse(CRY01 %in% c(1,2,3,4,5),
+                                   'UK born', 'Non-UK born'))) %>%
         select(-CRY01) -> x
     }else{
       x %>%
         mutate(CoB = ifelse(CRY01 %in% c(-8,-9), NA,
-                            ifelse(CRY01 %in% c(921, 922, 923, 924, 926), 'UK born', 'Non-UK born'))) %>%
+                            ifelse(CRY01 %in% c(921, 922, 923, 924, 926),
+                                   'UK born', 'Non-UK born'))) %>%
         select(-CRY01) -> x
     }
     ## country of birth (UK/not UK)
@@ -117,7 +131,7 @@ format_LFS <- function(x, year, year_var){
     ## formating of sex
     x %>%
       mutate(Sex = ifelse(SEX %in% c(-8,-9), NA,
-                          ifelse(SEX %in% c(1), 'Male', 'Female'))) %>%
+                          ifelse(SEX %in% 1, 'Male', 'Female'))) %>%
       select(-SEX) -> x
     
     ## standardise weight
@@ -127,38 +141,35 @@ format_LFS <- function(x, year, year_var){
   }else if (year %in% 2012:2016) {
     ## clean age with R style missing
     x %>%
-      mutate(Age = replace(AGE, AGE %in% c(-8, -9), NA)) %>%
+      mutate(Age = replace(AGE, AGE %in% c(-8,-9), NA)) %>%
       select(-AGE) -> x
     
     ## country of residence
     x %>%
-      mutate(Country = ifelse(COUNTRY %in% c(-9, -8), NA,
-                              ifelse(COUNTRY %in% c(1), 'England',
-                                     ifelse(COUNTRY %in% c(2), 'Wales',
-                                            ifelse(COUNTRY %in% c(3,4), 'Scotland', 'Northern Ireland'))))) %>%
+      mutate(Country = 
+               case_when(
+                 COUNTRY %in% c(-9,-8) ~ NA_character_,
+                 COUNTRY %in% 1      ~ 'England',
+                 COUNTRY %in% 2      ~ 'Wales',
+                 COUNTRY %in% c(3,4) ~ 'Scotland',
+                 COUNTRY %in% 5      ~ 'Northern Ireland',
+                 TRUE ~ NA_character_)) %>%  
       select(-COUNTRY) -> x
+    
     ## country of birth (UK/not UK)
     x %>%
       mutate(CoB = ifelse(CRY12 %in% c(-8,-9), NA,
-                          ifelse(CRY12 %in% c(921, 922, 923, 924, 926), 'UK born', 'Non-UK born'))) %>%
+                          ifelse(CRY12 %in% c(921, 922, 923, 924, 926),
+                                 'UK born', 'Non-UK born'))) %>%
       select(-CRY12) -> x
     
     ## formating of sex
     x %>%
       mutate(Sex = ifelse(SEX %in% c(-8,-9), NA,
-                          ifelse(SEX %in% c(1), 'Male', 'Female'))) %>%
+                          ifelse(SEX == 1, 'Male', 'Female'))) %>%
       select(-SEX) -> x
     
-    #Set weights based on the variable
-    if (year %in% c(2012)) {
-      ## standardise weight
-      x %>%
-        rename(Weight = PWT14) -> x
-    }else{
-      ## standardise weight
-      x %>%
-        rename(Weight = PWT16) -> x
-    }
+    x <- rename_at(x, vars(contains("PWT")), ~ "Weight")
     
   }else{
     stop('Year has no defined variables, or cleaning process; check year_var')
