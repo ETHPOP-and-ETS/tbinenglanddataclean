@@ -105,9 +105,7 @@ clean_demographics_uk <- function(data_path = "~/data/tb_data/UK_demographics",
       theme(axis.text.x = element_text(angle = 45)) -> p
     
     p
-    
-    
-    
+
     ## check a single year
     demo %>%
       filter(Year == "2015") %>%

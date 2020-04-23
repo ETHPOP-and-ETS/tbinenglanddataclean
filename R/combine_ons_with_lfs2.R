@@ -1,9 +1,11 @@
-#' A Function that Combines the ONS Demographic Data, with the LFS
-#' Demographic Data
+#' Combines ONS Demographic Data with LFS Data
+#'
+#' this is a rewrite of the original combine_ons_with_lfs()
 #'
 #' @description This function takes demographic data summarised by \code{\link[tbinenglanddataclean]{clean_demographics_uk}} and
 #' \code{\link[tbinenglanddataclean]{clean_labour_force_survey}} and combines it into a single tidy dataset.
 #' Summary statistics and plots can be returned to check both datasets.
+#' 
 #' @inherit clean_demographics_uk
 #' @param ons_name Character string of the file name of the ONS demographic data.
 #' @param lfs_name Character string of the file name of the LFS demographic data.
@@ -15,7 +17,6 @@
 #' for both ONS and LFS data.
 #' @export
 #' @importFrom dplyr mutate summarise select group_by mutate filter full_join bind_rows
-#' @examples
 #'
 combine_ons_with_lfs2 <- function(data_path = "",
                                   ons_name = "E_demo_2000_2015.rds",
