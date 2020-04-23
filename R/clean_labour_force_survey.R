@@ -2,7 +2,8 @@
 #'
 #' @description This functions automatically detects Labour Force Survey data in the specified
 #' directory and reads it into R. It then extracts the age, sex, UK birth status, and country.
-#' From this it creates a tidy dataset. The data can be downloaded [here](https://discover.ukdataservice.ac.uk/catalogue/?sn=5461).
+#' From this it creates a tidy dataset.
+#' The data can be downloaded [here](https://discover.ukdataservice.ac.uk/catalogue/?sn=5461).
 #' 
 #' cry01: country of birth
 #' pwtXX: sample weights
@@ -23,23 +24,23 @@
 clean_labour_force_survey <- function(data_path = "D:/data/LFS/stata",
                                       years = 2000:2016,
                                       years_var = list(
-                                        '2000' = c('age', 'sex', 'cry',   'govtof',  'pwt07'),
-                                        '2001' = c('age', 'sex', 'cry01', 'country', 'pwt07'),
-                                        '2002' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', "ETH01", "ETHAS", "CRYO", "CAMEYR"),
-                                        '2003' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                        '2004' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                        '2005' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                        '2006' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                        '2007' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                        '2008' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                        '2009' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                        '2010' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                        '2011' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14'),
-                                        '2012' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT14'),
-                                        '2013' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
-                                        '2014' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16'),
-                                        '2015' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT18'),
-                                        '2016' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT18')),
+                                        '2000' = c('age', 'sex', 'cry',   'govtof',  'pwt07', 'ethcen', 'cameyr'), #, 'cryox'
+                                        '2001' = c('age', 'sex', 'cry01', 'country', 'pwt07', 'eth01', 'ethas', 'cameyr'), # 'cryox',
+                                        '2002' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETH01', 'ETHAS', 'CAMEYR'), # 'CRYOX',
+                                        '2003' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETH01', 'ETHAS', 'CAMEYR'), # 'CRYOX',
+                                        '2004' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETH01', 'ETHAS', 'CAMEYR'), # 'CRYOX',
+                                        '2005' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETH01', 'ETHAS', 'CAMEYR'), # 'CRYOX',
+                                        '2006' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETH01', 'ETHAS', 'CAMEYR'), # 'CRYOX',
+                                        '2007' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETH01', 'ETHAS', 'CAMEYR'), # 'CRYOX',
+                                        '2008' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETH01', 'ETHAS', 'CAMEYR'), # 'CRYOX',
+                                        '2009' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETH01', 'ETHAS', 'CAMEYR'), # 'CRYOX',
+                                        '2010' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETH01', 'ETHAS', 'CAMEYR'), # 'CRYOX',
+                                        '2011' = c('AGE', 'SEX', 'CRY01', 'COUNTRY', 'PWT14', 'ETHGBEUL', 'CAMEYR'), #, 'CRYOX7'
+                                        '2012' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT14', 'ETHGBEUL', 'CAMEYR'), #, 'CRYOX7'
+                                        '2013' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16', 'ETHGBEUL', 'CAMEYR'), #, 'CRYOX7'
+                                        '2014' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT16', 'ETHGBEUL', 'CAMEYR'), #, 'CRYOX7'
+                                        '2015' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT18', 'ETHGBEUL', 'CAMEYR'), #, 'CRYOX7'
+                                        '2016' = c('AGE', 'SEX', 'CRY12', 'COUNTRY', 'PWT18', 'ETHGBEUL', 'CAMEYR')), #, 'CRYOX7'
                                       rtn = TRUE,
                                       save = TRUE,
                                       save_name = "formatted_LFS_2000_2016",
@@ -97,7 +98,8 @@ clean_labour_force_survey <- function(data_path = "D:/data/LFS/stata",
   
   # subset data folders
   lfc_ajxx <- paste(paste0("aj", substr(years, 3, 4)), collapse = "|")
-  files_keep <- map_lgl(LFS_paths, function(x) grepl(lfc_ajxx, x))
+  files_keep <- map_lgl(LFS_paths,
+                        function(x) grepl(lfc_ajxx, x))
   
   # get years corresponding to data folders
   # may not be in order
@@ -131,7 +133,7 @@ clean_labour_force_survey <- function(data_path = "D:/data/LFS/stata",
   # Extract key variables and combine ---------------------------------------
   
   form_LFS_data <-
-    pmap(list(LFS_data, years, years_var),
+    pmap(.l = list(LFS_data, years, years_var),
          .f = format_LFS) %>%
     bind_rows() %>%
     mutate(Country = factor(Country),

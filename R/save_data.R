@@ -15,9 +15,13 @@
 #' @examples
 #'
 #' ## save_data(cars, name = "cars")
-save_data <- function(df, name = NULL, path = NULL,
-                      format = "rds", message = NULL,
+save_data <- function(df,
+                      name = NULL,
+                      path = NULL,
+                      format = "rds",
+                      message = NULL,
                       verbose = TRUE) {
+  
   if (is.null(name)) {
     stop("name must be a non-empty character string")
   }
