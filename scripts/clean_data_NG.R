@@ -9,6 +9,8 @@
 
 library(purrr)
 library(dplyr)
+library(tidyr)
+
 devtools::load_all(".")
 
 run_envir <- "D:/data"
@@ -45,12 +47,23 @@ combine_ons_with_lfs2(data_path = run_envir,
                       save_format = c("rds", "csv"),
                       verbose = TRUE) 
 
-##TODO:
-clean_and_munge_england_births(birth_path = paste0(run_envir, "/data/tb_data/UK_demographics/annual_reference_table.xls"),
-                               projected_birth_path = paste0(run_envir, "/data/tb_data/UK_demographics/england_population_projections.xls"),
-                               return = FALSE,
-                               save = TRUE,
-                               save_name = "england_births",
-                               save_path = paste0(run_envir, "/data/tb_data/tbinenglanddataclean"),
-                               save_format = c("rds", "csv"),
-                               verbose = TRUE)
+clean_births(birth_path = paste0(run_envir, "/ONS/ukpppsummary18.xls"),
+             return = FALSE,
+             save = TRUE,
+             save_name = "uk_births",
+             save_path = run_envir,
+             save_format = c("rds", "csv"))
+
+clean_inmigration(inmigration_path = paste0(run_envir, "/ONS/ukpppsummary18.xls"),
+                  return = FALSE,
+                  save = TRUE,
+                  save_name = "uk_inmigration",
+                  save_path = run_envir,
+                  save_format = c("rds", "csv"))
+
+clean_outmigration(outmigration_path = paste0(run_envir, "/ONS/ukpppsummary18.xls"),
+                   return = FALSE,
+                   save = TRUE,
+                   save_name = "uk_outmigration",
+                   save_path = run_envir,
+                   save_format = c("rds", "csv"))
