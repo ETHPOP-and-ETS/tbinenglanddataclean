@@ -28,10 +28,10 @@ clean_demographics_uk(data_path = paste0(run_envir, "/ONS"),
                       verbose = TRUE)
 
 # output save here: data/formatted_LFS_2000_2016
-clean_labour_force_survey(years = 2015:2016,
+clean_labour_force_survey(years = 2011:2016,
                           rtn = FALSE,
                           save = TRUE,
-                          save_name = "formatted_LFS_2015_2016",
+                          save_name = "formatted_LFS_2011_2016",
                           save_format = c("rds", "csv"),
                           save_path = run_envir,
                           verbose = TRUE)

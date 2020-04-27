@@ -2,16 +2,16 @@
 #'
 #' this is a rewrite of the original combine_ons_with_lfs()
 #'
-#' @description This function takes demographic data summarised by \code{\link[tbinenglanddataclean]{clean_demographics_uk}} and
+#' Takes demographic data summarised by \code{\link[tbinenglanddataclean]{clean_demographics_uk}} and
 #' \code{\link[tbinenglanddataclean]{clean_labour_force_survey}} and combines it into a single tidy dataset.
 #' Summary statistics and plots can be returned to check both datasets.
 #' 
 #' @inherit clean_demographics_uk
 #' @param ons_name Character string of the file name of the ONS demographic data.
 #' @param lfs_name Character string of the file name of the LFS demographic data.
-#' @param countries  A character string, the countries to include in the
-#' dataset. By default only England is included. Note this is reliant on the data being present in the
-#' demographic datasets.
+#' @param countries A character string, the countries to include in the
+#'                  dataset. By default only England is included. Note this is
+#'                  reliant on the data being present in the demographic datasets.
 #'
 #' @return A tidy tibble of demographic data by age between 2000 and 2015 for the specified countries
 #' for both ONS and LFS data.
@@ -59,15 +59,17 @@ combine_ons_with_lfs2 <- function(data_path = "",
   
   demo_2000_2015 <- 
     demo_2000_2015 %>%
-    mutate(CoB = 'Total') %>%
-    # mutate(CoB = CoB) %>% # WHAT IS THIS FOR??
+    mutate(CoB = 'Total') %>% # ie not broken down by UK born
+    # mutate(CoB = CoB) %>% # WHAT IS THIS FOR?? NG
     mutate(Year = as.numeric(as.character(Year)))
   
   # row bind
+  # because population won't match (?)
   demo_2000_2016_strat_est <-
     full_join(demo_2000_2015, lfs_data_aggr,
               by = c('Year', 'Age', 'CoB', 'Population')) %>%
-    mutate(CoB = factor(CoB, levels = c('Total', 'UK born', 'Non-UK born')))
+    mutate(CoB = factor(CoB,
+                        levels = c('Total', 'UK born', 'Non-UK born')))
   
   
   # Include comparison total from LFS -------------------------------------------
@@ -80,13 +82,15 @@ combine_ons_with_lfs2 <- function(data_path = "",
     mutate(CoB = 'Total (LFS)') %>%
     bind_rows(demo_2000_2016_strat_est %>%
                 mutate(CoB = as.character(CoB))) %>%
-    mutate(CoB = factor(CoB, levels = c('Total', 'Total (LFS)', 'UK born', 'Non-UK born')))
+    mutate(CoB = factor(CoB,
+                        levels = c('Total', 'Total (LFS)', 'UK born', 'Non-UK born')))
   
   
   # Add 5 year age groups ---------------------------------------------------
   demo_2000_2016_strat_est <- 
     demo_2000_2016_strat_est %>%
-    mutate(`Age group` = as.character(Age) %>%
+    mutate(`Age group` =
+             as.character(Age) %>%
              replace(Age %in% '90+', '90') %>%
              as.numeric() %>%
              cut(breaks = seq(0,95,5),
