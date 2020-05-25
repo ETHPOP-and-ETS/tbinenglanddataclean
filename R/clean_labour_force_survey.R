@@ -134,7 +134,8 @@ clean_labour_force_survey <- function(data_path = "D:/data/LFS/stata",
   
   form_LFS_data <-
     pmap(.l = list(LFS_data, years, years_var),
-         .f = format_LFS) %>%
+         # .f = format_LFS) %>%                    # clean each year
+         .f = format_LFS2) %>%                    # clean each year
     bind_rows() %>%
     mutate(Country = factor(Country),
            CoB = factor(CoB),
