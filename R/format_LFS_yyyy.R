@@ -82,7 +82,6 @@ format_LFS_2001 <- function(x, year) {
   x
 }
 
-##TODO: fix 2010
 #
 format_LFS_2002to2011 <- function(x, year) {
   
@@ -103,6 +102,7 @@ format_LFS_2002to2011 <- function(x, year) {
                TRUE ~ NA_character_)) %>%  
     select(-COUNTRY) -> x
   
+  ## country of birth (UK/not UK)
   ## Split due to  errors in variable encoding between 2002 and 2007
   if (year %in% c(2002:2006)) {
     ## country of birth (UK/not UK)
@@ -118,6 +118,26 @@ format_LFS_2002to2011 <- function(x, year) {
                           ifelse(CRY01 %in% UK_codes,
                                  'UK born', 'Non-UK born'))) %>%
       select(-CRY01) -> x
+  }
+  
+  if (year == 2010) {
+    
+    ## format ethnicity
+    x %>%
+      mutate(ethgrp = 
+               case_when(
+                 ETHCEN15 %in% c(-9,-8)    ~ NA_character_,
+                 ETHCEN15 %in% c(-6,1,2)   ~ 'White',
+                 ETHCEN15 %in% c(3,4,5,6)  ~ 'Mixed',
+                 ETHCEN15 %in% 7           ~ 'Indian',
+                 ETHCEN15 %in% 8           ~ 'Pakistani',
+                 ETHCEN15 %in% 9           ~ 'Bangladeshi',
+                 ETHCEN15 %in% c(10,14)    ~ 'Asian',
+                 ETHCEN15 %in% c(11,12,13) ~ 'Black/Black British',
+                 ETHCEN15 %in% 15          ~ 'Other',
+                 TRUE ~ NA_character_)) %>%  
+      select(-ETHCEN15) -> x
+    
   }
   
   if (year == 2011) {
@@ -138,20 +158,19 @@ format_LFS_2002to2011 <- function(x, year) {
                  TRUE ~ NA_character_)) %>%  
       select(-ETHGBEUL) -> x
     
-    ## format time in country to intervals
-    ## do we want just year of entry instead?
-    x <- 
-      x %>% 
-      mutate(timeinUK = 
-               case_when(
-                 CAMEYR %in% c(-8,-9) ~ NA_character_,
-                 TRUE ~ as.character(cut(year - CAMEYR,
-                                         breaks = c(0,1,2,5,100)))
-               )) %>% 
-      select(-CAMEYR)
   }
   
-  ## country of birth (UK/not UK)
+  ## format time in country to intervals
+  ## do we want just year of entry instead?
+  x <- 
+    x %>% 
+    mutate(timeinUK = 
+             case_when(
+               CAMEYR %in% c(-8,-9) ~ NA_character_,
+               TRUE ~ as.character(cut(year - CAMEYR,
+                                       breaks = c(0,1,2,5,100)))
+             )) %>% 
+    select(-CAMEYR)
   
   ## formatting of sex
   x %>%
